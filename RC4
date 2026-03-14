@@ -1,0 +1,58 @@
+def KSA(key):
+    key_length = len(key)
+    S = list(range(256))
+    j = 0
+
+    for i in range(256):
+        j = (j + S[i] + key[i % key_length]) % 256
+        S[i], S[j] = S[j], S[i]
+
+    return S
+
+
+def PRGA(S, n):
+    i = 0
+    j = 0
+    keystream = []
+
+    for k in range(n):
+        i = (i + 1) % 256
+        j = (j + S[i]) % 256
+        S[i], S[j] = S[j], S[i]
+        t = (S[i] + S[j]) % 256
+        keystream.append(S[t])
+
+    return keystream
+
+
+def RC4(key, plaintext):
+    key = [ord(c) for c in key]
+    plaintext = [ord(c) for c in plaintext]
+
+    S = KSA(key)
+    keystream = PRGA(S, len(plaintext))
+
+    ciphertext = []
+    for i in range(len(plaintext)):
+        ciphertext.append(plaintext[i] ^ keystream[i])
+
+    return ciphertext, keystream
+
+
+def decrypt(ciphertext, keystream):
+    plaintext = []
+    for i in range(len(ciphertext)):
+        plaintext.append(ciphertext[i] ^ keystream[i])
+
+    return ''.join(chr(c) for c in plaintext)
+
+key = "Secret"
+plaintext = "HELLO"
+
+ciphertext, keystream = RC4(key, plaintext)
+
+print("Keystream:", keystream)
+print("Ciphertext:", ciphertext)
+
+decrypted = decrypt(ciphertext, keystream)
+print("Decrypted text:", decrypted)
