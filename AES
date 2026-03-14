@@ -1,0 +1,12 @@
+from Crypto.Cipher import AES
+
+key = b'secret12345678901'
+cipher = AES.new(key, AES.MODE_ECB)
+
+plaintext = b'HelloWorld123456'
+
+ciphertext = cipher.encrypt(plaintext)
+print("Ciphertext:", ciphertext)
+
+decrypted = cipher.decrypt(ciphertext)
+print("Decrypted:", decrypted)
